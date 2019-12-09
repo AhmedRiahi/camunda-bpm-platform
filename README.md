@@ -91,7 +91,7 @@ This will build all the modules that make up the camunda BPM platform but will n
 
 ```
 distro/tomcat/distro/target     (Apache Tomcat 9 Distribution)
-distro/wildlfy/distro/target   (Wildfly AS Distribution)
+distro/wildfly/distro/target   (WildFly AS Distribution)
 ```
 
 Running Integration Tests
