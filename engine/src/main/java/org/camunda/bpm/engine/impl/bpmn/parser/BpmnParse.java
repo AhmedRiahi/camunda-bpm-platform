@@ -32,8 +32,8 @@ import org.camunda.bpm.engine.impl.bpmn.listener.ExpressionExecutionListener;
 import org.camunda.bpm.engine.impl.bpmn.listener.ScriptExecutionListener;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.core.model.*;
-import org.camunda.bpm.engine.impl.core.model.BaseCallableElement.CallableElementBinding;
 import org.camunda.bpm.engine.impl.core.model.Properties;
+import org.camunda.bpm.engine.impl.core.model.BaseCallableElement.CallableElementBinding;
 import org.camunda.bpm.engine.impl.core.variable.mapping.IoMapping;
 import org.camunda.bpm.engine.impl.core.variable.mapping.value.ConstantValueProvider;
 import org.camunda.bpm.engine.impl.core.variable.mapping.value.NullValueProvider;
@@ -59,11 +59,7 @@ import org.camunda.bpm.engine.impl.task.listener.ClassDelegateTaskListener;
 import org.camunda.bpm.engine.impl.task.listener.DelegateExpressionTaskListener;
 import org.camunda.bpm.engine.impl.task.listener.ExpressionTaskListener;
 import org.camunda.bpm.engine.impl.task.listener.ScriptTaskListener;
-import org.camunda.bpm.engine.impl.util.DecisionEvaluationUtil;
-import org.camunda.bpm.engine.impl.util.ParseUtil;
-import org.camunda.bpm.engine.impl.util.ReflectUtil;
-import org.camunda.bpm.engine.impl.util.ScriptUtil;
-import org.camunda.bpm.engine.impl.util.StringUtil;
+import org.camunda.bpm.engine.impl.util.*;
 import org.camunda.bpm.engine.impl.util.xml.Element;
 import org.camunda.bpm.engine.impl.util.xml.Namespace;
 import org.camunda.bpm.engine.impl.util.xml.Parse;
@@ -122,6 +118,7 @@ public class BpmnParse extends Parse {
   public static final String PROPERTYNAME_JOB_PRIORITY = "jobPriority";
   public static final String PROPERTYNAME_TASK_PRIORITY = "taskPriority";
   public static final String PROPERTYNAME_EXTERNAL_TASK_TOPIC = "topic";
+  public static final String PROPERTYNAME_NODEJS_COMPONENT = "component";
   public static final String PROPERTYNAME_CLASS = "class";
   public static final String PROPERTYNAME_EXPRESSION = "expression";
   public static final String PROPERTYNAME_DELEGATE_EXPRESSION = "delegateExpression";
@@ -796,7 +793,7 @@ public class BpmnParse extends Parse {
   }
 
   protected ActivityImpl parseCompensationHandlerForCompensationBoundaryEvent(ScopeImpl parentScope, ActivityImpl sourceActivity, String targetRef,
-      Map<String, Element> compensationHandlers) {
+                                                                              Map<String, Element> compensationHandlers) {
 
     Element compensationHandler = compensationHandlers.get(targetRef);
 
@@ -2142,6 +2139,8 @@ public class BpmnParse extends Parse {
         parseShellServiceTask(activity, serviceTaskElement, parseFieldDeclarations(serviceTaskElement));
       } else if (type.equalsIgnoreCase("external")) {
         parseExternalServiceTask(activity, serviceTaskElement);
+      } else if (type.equalsIgnoreCase("nodejs")) {
+        parseNodeJSServiceTask(activity, serviceTaskElement);
       } else {
         addError("Invalid usage of type attribute on " + elementName + ": '" + type + "'", serviceTaskElement);
       }
@@ -2382,6 +2381,12 @@ public class BpmnParse extends Parse {
     ParameterValueProvider topicNameProvider = parseTopic(serviceTaskElement, PROPERTYNAME_EXTERNAL_TASK_TOPIC);
     ParameterValueProvider priorityProvider = parsePriority(serviceTaskElement, PROPERTYNAME_TASK_PRIORITY);
     activity.setActivityBehavior(new ExternalTaskActivityBehavior(topicNameProvider, priorityProvider));
+  }
+
+  protected void parseNodeJSServiceTask(ActivityImpl activity, Element serviceTaskElement) {
+    activity.setScope(true);
+    ParameterValueProvider nodeJSComponentName = parseTopic(serviceTaskElement, PROPERTYNAME_NODEJS_COMPONENT);
+    activity.setActivityBehavior(new NodeJSTaskActivityBehavior(nodeJSComponentName));
   }
 
   protected void validateFieldDeclarationsForEmail(Element serviceTaskElement, List<FieldDeclaration> fieldDeclarations) {
