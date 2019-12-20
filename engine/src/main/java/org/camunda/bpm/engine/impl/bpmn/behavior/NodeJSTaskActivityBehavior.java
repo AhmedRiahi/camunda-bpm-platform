@@ -1,6 +1,8 @@
 package org.camunda.bpm.engine.impl.bpmn.behavior;
 
 import com.eclipsesource.v8.NodeJS;
+import com.eclipsesource.v8.V8Array;
+import com.eclipsesource.v8.V8Function;
 import org.camunda.bpm.engine.component.ComponentMeta;
 import org.camunda.bpm.engine.component.NodeJSComponentsContext;
 import org.camunda.bpm.engine.exception.ComponentNotFoundException;
@@ -28,13 +30,17 @@ public class NodeJSTaskActivityBehavior extends AbstractBpmnActivityBehavior {
         final NodeJS nodeJS = NodeJS.createNodeJS();
         ResultResolver resultResolver = new ResultResolver(activityExecution);
         nodeJS.getRuntime().registerJavaMethod(resultResolver,"resolve", "resolve",new Class[]{String.class});
-        File nodeScript = new File(componentMeta.getScriptPath());
+        V8Function mainFunction = (V8Function) nodeJS.require(new File(componentMeta.getScriptPath())).get("main");
+        mainFunction.registerJavaMethod(resultResolver,"resolve", "resolve",new Class[]{String.class});
 
-        nodeJS.exec(nodeScript);
-
+        V8Array inputs = new V8Array(mainFunction.getRuntime());
+        inputs.push("foo.com");
+        mainFunction.call(null,inputs);
         while(nodeJS.isRunning()) {
             nodeJS.handleMessage();
         }
+        mainFunction.release();
+        nodeJS.getRuntime().release();
         nodeJS.release();
     }
 

@@ -15,7 +15,9 @@ public class NodeJSComponentsContext {
 
     private List<ComponentMeta> componentMetaList =  new ArrayList<>();
 
-    private NodeJSComponentsContext(){}
+    private NodeJSComponentsContext(){
+        this.initComponents();
+    }
 
     private void initComponents(){
         this.addComponentMeta(
