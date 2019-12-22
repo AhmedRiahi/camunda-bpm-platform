@@ -2,15 +2,19 @@ package org.camunda.bpm.engine.component;
 
 
 
+import lombok.Data;
+import org.camunda.bpm.engine.component.meta.ComponentMeta;
+import org.camunda.bpm.engine.component.meta.ComponentParameterMeta;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-
+@Data
 public class NodeJSComponentsContext {
 
-
+    public static final String COMPONENTS_FOLDER = "/Users/e10114553/Documents/camunda-nodejs-components";
     public static final NodeJSComponentsContext INSTANCE = new NodeJSComponentsContext();
 
     private List<ComponentMeta> componentMetaList =  new ArrayList<>();
@@ -25,8 +29,8 @@ public class NodeJSComponentsContext {
                         .domain("opensrs")
                         .name("domain_lookup")
                         .inputParameterMetas(Arrays.asList(ComponentParameterMeta.builder().name("domain_name").build()))
-                        .outputParameterMetas(Arrays.asList(ComponentParameterMeta.builder().name("domain_exists").build()))
-                        .scriptPath("/Users/e10114553/Documents/camunda-nodejs-components/opensrs/src/test.js")
+                        .outputParameterMeta(ComponentParameterMeta.builder().name("domain_exists").build())
+                        .scriptPath(COMPONENTS_FOLDER+"/opensrs/src/test.js")
                         .build()
         );
     }

@@ -1,4 +1,4 @@
-package org.camunda.bpm.engine.component;
+package org.camunda.bpm.engine.component.meta;
 
 import lombok.Builder;
 import lombok.Data;
@@ -14,13 +14,10 @@ public class ComponentMeta {
     private String name;
     private String scriptPath;
     private List<ComponentParameterMeta> inputParameterMetas = new ArrayList<>();
-    private List<ComponentParameterMeta> outputParameterMetas = new ArrayList<>();
+    private ComponentParameterMeta outputParameterMeta;
 
     public void addInputParameterMeta(ComponentParameterMeta parameterMeta){
         this.inputParameterMetas.add(parameterMeta);
     }
 
-    public void addOutputParameterMeta(ComponentParameterMeta parameterMeta){
-        this.outputParameterMetas.add(parameterMeta);
-    }
 }

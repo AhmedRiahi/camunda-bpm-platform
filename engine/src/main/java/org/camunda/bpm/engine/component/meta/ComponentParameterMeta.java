@@ -1,4 +1,4 @@
-package org.camunda.bpm.engine.component;
+package org.camunda.bpm.engine.component.meta;
 
 
 import lombok.Builder;
