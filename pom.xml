@@ -48,7 +48,6 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <modules>
-        <module>qa</module>
 
         <module>webapps/h2-webapp</module>
 
