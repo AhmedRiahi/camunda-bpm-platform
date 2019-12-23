@@ -2,19 +2,16 @@ package org.camunda.bpm;
 
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.ProcessEngineConfiguration;
+import org.camunda.bpm.engine.component.context.scanner.ComponentsScanner;
 
 public class MainTest {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
-        ProcessEngine processEngine = createProcessEngine();
-        processEngine.getRepositoryService()
-                .createDeployment()
-                .addInputStream("process.bpmn", MainTest.class.getClassLoader().getResourceAsStream("process.bpmn"))
-                .name("component-process")
-                .tenantId("component-process")
-                .deploy();
+        ComponentsScanner componentsScanner = new ComponentsScanner();
+        componentsScanner.startScanner();
+        Thread.sleep(1000*20);
 
     }
 

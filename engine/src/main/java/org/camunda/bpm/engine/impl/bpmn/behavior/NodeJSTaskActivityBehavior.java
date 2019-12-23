@@ -1,12 +1,11 @@
 package org.camunda.bpm.engine.impl.bpmn.behavior;
 
 import com.eclipsesource.v8.NodeJS;
-import com.eclipsesource.v8.V8Array;
 import com.eclipsesource.v8.V8Function;
 import org.camunda.bpm.engine.component.ComponentInputResolver;
 import org.camunda.bpm.engine.component.ComponentOutputResolver;
 import org.camunda.bpm.engine.component.meta.ComponentMeta;
-import org.camunda.bpm.engine.component.NodeJSComponentsContext;
+import org.camunda.bpm.engine.component.context.NodeJSComponentsContext;
 import org.camunda.bpm.engine.exception.ComponentNotFoundException;
 import org.camunda.bpm.engine.impl.core.variable.mapping.value.ParameterValueProvider;
 import org.camunda.bpm.engine.impl.persistence.entity.ExecutionEntity;
