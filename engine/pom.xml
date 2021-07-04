@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <name>camunda BPM - engine</name>
-  <artifactId>camunda-engine</artifactId>
+  <artifactId>camunda-engine-vistaprint</artifactId>
 
   <parent>
     <groupId>org.camunda.bpm</groupId>
@@ -14,7 +14,34 @@
 
   <dependencies>
 
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.16.16</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.eclipsesource.j2v8</groupId>
+      <artifactId>j2v8_macosx_x86_64</artifactId>
+      <version>4.6.0</version>
+    </dependency>
+
+
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.7.3</version>
+    </dependency>
+
+
     <!-- camunda dependencies -->
+
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-core</artifactId>
+      <version>2.18.0</version>
+    </dependency>
 
     <dependency>
       <groupId>org.camunda.bpm.model</groupId>
@@ -232,7 +259,7 @@
       <artifactId>jcl-over-slf4j</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
@@ -306,13 +333,29 @@
 
     <plugins>
       <plugin>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok-maven-plugin</artifactId>
+        <version>0.11.6.0</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>delombok</goal>
+            </goals>
+            <configuration>
+              <encoding>UTF-8</encoding>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <failIfNoTests>false</failIfNoTests>
           <trimStackTrace>false</trimStackTrace>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
           <includes>
-           <include>%regex[.*(${test.includes}).*Test.*.class]</include>
+            <include>%regex[.*(${test.includes}).*Test.*.class]</include>
           </includes>
           <excludes>
             <exclude>**/*TestCase.java</exclude>
@@ -352,37 +395,10 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
+        <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
-          <createSourcesJar>true</createSourcesJar>
-          <createDependencyReducedPom>false</createDependencyReducedPom>
-          <artifactSet>
-            <excludes>
-              <exclude>org.camunda.bpm.model:*</exclude>
-              <exclude>org.camunda.bpm.dmn:*</exclude>
-              <exclude>org.camunda.commons:*</exclude>
-
-              <exclude>org.springframework:*</exclude>
-              <exclude>org.slf4j:*</exclude>
-              <exclude>org.apache.commons:*</exclude>
-              <exclude>com.sun.mail:*</exclude>
-              <exclude>javax.activation:*</exclude>
-              <exclude>org.mybatis:mybatis:*</exclude>
-              <exclude>commons-logging:*</exclude>
-              <exclude>joda-time:*</exclude>
-            </excludes>
-          </artifactSet>
-          <relocations>
-            <relocation>
-              <pattern>com.google.gson</pattern>
-              <shadedPattern>camundajar.impl.com.google.gson</shadedPattern>
-            </relocation>
-          </relocations>
-          <transformers>
-            <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-          </transformers>
-          <shadeTestJar>true</shadeTestJar>
+          <source>8</source>
+          <target>8</target>
         </configuration>
       </plugin>
     </plugins>
@@ -536,6 +552,28 @@
               <systemPropertyVariables>
                 <jdbcUrl>jdbc:h2:mem:camunda_${surefire.forkNumber};DB_CLOSE_DELAY=1000</jdbcUrl>
               </systemPropertyVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>oracle-10</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <failIfNoTests>false</failIfNoTests>
+              <trimStackTrace>false</trimStackTrace>
+              <redirectTestOutputToFile>true</redirectTestOutputToFile>
+              <excludes>
+                <exclude>**/ManagementServiceTest.java</exclude>
+
+                <exclude>**/*TestCase.java</exclude>
+                <exclude>**/RepeatingServiceTaskTest.java</exclude>
+              </excludes>
             </configuration>
           </plugin>
         </plugins>
@@ -756,7 +794,7 @@
                      the same except for the whole unit test suite -->
                 <exclude>**/DatabaseTablePrefixTest.java</exclude>
                 <exclude>**/DeploymentTest.java</exclude>
-				<exclude>**/DeploymentAutoHistoryTest.java</exclude>
+                <exclude>**/DeploymentAutoHistoryTest.java</exclude>
                 <exclude>**/CustomHistoryLevelUserOperationLogTest.java</exclude>
                 <exclude>**/CustomHistoryLevelWithoutUserOperationLogTest.java</exclude>
                 <exclude>**/CustomHistoryLevelIncidentTest.java</exclude>
@@ -772,52 +810,52 @@
 
     <!-- test profiles -->
     <profile>
-     <id>testBpmn</id>
-     <properties>
-      <test.includes>bpmn</test.includes>
-     </properties>
+      <id>testBpmn</id>
+      <properties>
+        <test.includes>bpmn</test.includes>
+      </properties>
     </profile>
     <profile>
-     <id>testCmmn</id>
-     <properties>
-      <test.includes>cmmn</test.includes>
-     </properties>
+      <id>testCmmn</id>
+      <properties>
+        <test.includes>cmmn</test.includes>
+      </properties>
     </profile>
     <profile>
-     <id>testDmn</id>
-     <properties>
-      <test.includes>dmn</test.includes>
-     </properties>
+      <id>testDmn</id>
+      <properties>
+        <test.includes>dmn</test.includes>
+      </properties>
     </profile>
     <profile>
-     <id>testBpmnCmmn</id>
-     <properties>
-      <test.includes>bpmn|cmmn</test.includes>
-     </properties>
+      <id>testBpmnCmmn</id>
+      <properties>
+        <test.includes>bpmn|cmmn</test.includes>
+      </properties>
     </profile>
     <profile>
-     <id>testExceptBpmn</id>
-     <properties>
-      <test.excludes>bpmn</test.excludes>
-     </properties>
+      <id>testExceptBpmn</id>
+      <properties>
+        <test.excludes>bpmn</test.excludes>
+      </properties>
     </profile>
     <profile>
-     <id>testExceptCmmn</id>
-     <properties>
-      <test.excludes>cmmn</test.excludes>
-     </properties>
+      <id>testExceptCmmn</id>
+      <properties>
+        <test.excludes>cmmn</test.excludes>
+      </properties>
     </profile>
     <profile>
-     <id>testExceptDmn</id>
-     <properties>
-      <test.excludes>dmn</test.excludes>
-     </properties>
+      <id>testExceptDmn</id>
+      <properties>
+        <test.excludes>dmn</test.excludes>
+      </properties>
     </profile>
     <profile>
-     <id>testExceptBpmnCmmn</id>
-     <properties>
-      <test.excludes>bpmn|cmmn</test.excludes>
-     </properties>
+      <id>testExceptBpmnCmmn</id>
+      <properties>
+        <test.excludes>bpmn|cmmn</test.excludes>
+      </properties>
     </profile>
 
   </profiles>

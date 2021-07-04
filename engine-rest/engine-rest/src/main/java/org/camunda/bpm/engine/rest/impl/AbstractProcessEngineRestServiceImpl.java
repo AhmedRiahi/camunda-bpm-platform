@@ -22,35 +22,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Providers;
 
-import org.camunda.bpm.engine.rest.AuthorizationRestService;
-import org.camunda.bpm.engine.rest.BatchRestService;
-import org.camunda.bpm.engine.rest.CaseDefinitionRestService;
-import org.camunda.bpm.engine.rest.CaseExecutionRestService;
-import org.camunda.bpm.engine.rest.CaseInstanceRestService;
-import org.camunda.bpm.engine.rest.ConditionRestService;
-import org.camunda.bpm.engine.rest.DecisionDefinitionRestService;
-import org.camunda.bpm.engine.rest.DecisionRequirementsDefinitionRestService;
-import org.camunda.bpm.engine.rest.DeploymentRestService;
-import org.camunda.bpm.engine.rest.ExecutionRestService;
-import org.camunda.bpm.engine.rest.ExternalTaskRestService;
-import org.camunda.bpm.engine.rest.FilterRestService;
-import org.camunda.bpm.engine.rest.GroupRestService;
-import org.camunda.bpm.engine.rest.IdentityRestService;
-import org.camunda.bpm.engine.rest.IncidentRestService;
-import org.camunda.bpm.engine.rest.JobDefinitionRestService;
-import org.camunda.bpm.engine.rest.JobRestService;
-import org.camunda.bpm.engine.rest.MessageRestService;
-import org.camunda.bpm.engine.rest.MetricsRestService;
-import org.camunda.bpm.engine.rest.MigrationRestService;
-import org.camunda.bpm.engine.rest.ModificationRestService;
-import org.camunda.bpm.engine.rest.ProcessDefinitionRestService;
-import org.camunda.bpm.engine.rest.ProcessInstanceRestService;
-import org.camunda.bpm.engine.rest.SchemaLogRestService;
-import org.camunda.bpm.engine.rest.SignalRestService;
-import org.camunda.bpm.engine.rest.TaskRestService;
-import org.camunda.bpm.engine.rest.TenantRestService;
-import org.camunda.bpm.engine.rest.UserRestService;
-import org.camunda.bpm.engine.rest.VariableInstanceRestService;
+import org.camunda.bpm.engine.rest.*;
 import org.camunda.bpm.engine.rest.history.HistoryRestService;
 import org.camunda.bpm.engine.rest.impl.history.HistoryRestServiceImpl;
 import org.camunda.bpm.engine.rest.impl.optimize.OptimizeRestService;
@@ -294,6 +266,13 @@ public abstract class AbstractProcessEngineRestServiceImpl {
   public SchemaLogRestService getSchemaLogRestService(String engineName) {
     String rootResourcePath = getRelativeEngineUri(engineName).toASCIIString();
     SchemaLogRestServiceImpl subResource = new SchemaLogRestServiceImpl(engineName, getObjectMapper());
+    subResource.setRelativeRootResourceUri(rootResourcePath);
+    return subResource;
+  }
+
+  public ComponentDefinitionRestService getComponentDefinitionRestService(String engineName){
+    String rootResourcePath = getRelativeEngineUri(engineName).toASCIIString();
+    ComponentDefinitionRestServiceImpl subResource = new ComponentDefinitionRestServiceImpl(engineName, getObjectMapper());
     subResource.setRelativeRootResourceUri(rootResourcePath);
     return subResource;
   }
